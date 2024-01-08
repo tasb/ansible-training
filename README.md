@@ -8,7 +8,6 @@ Navigate to <https://tasb.github.io/ansible-training/> to have access to a HTML 
 
 - [Prerequisites](#prerequisites)
 - [Slides](#slides)
-- [Demos](#demos)
 - [Labs](#labs)
 - [Feedback](#feedback)
   
@@ -21,9 +20,26 @@ To perform the demos shared during the sessions you will need to have the follow
 
 ## Slides
 
-## Demos
+The slides used during the sessions are available on the `slides` folder.
+
+- [Ansible Introduction](slides/01.Introduction.pdf)
+- [Running Ad-Hoc Commands](slides/02.RunninAdHocCommands.pdf)
+- [Inventories](slides/03.Inventories.pdf)
+- [Playbooks](slides/04.Playbooks.pdf)
+- [Deep Dive into Playbooks](slides/05.DeepDivePlaybooks.pdf)
+- [Roles](slides/06.Roles.pdf)
+- [Templates using Jinja2](slides/07.Templating.pdf)
 
 ## Labs
+
+- [Lab 1 - Running Ad-Hoc Commands](labs/lab01.md)
+- [Lab 2 - Inventories](labs/lab02.md)
+- [Lab 3 - Playbooks](labs/lab03.md)
+- [Lab 4 - Deep Dive into Playbooks](labs/lab04.md)
+- [Lab 5 - Roles](labs/lab05.md)
+- [Lab 6 - Templates using Jinja2](labs/lab06.md)
+- [Lab 7 - Error handling and Ansible Vault](labs/lab07.md)
+- [Lab 8 - CI/CD with Ansible](labs/lab08.md)
 
 ## Feedback
 
