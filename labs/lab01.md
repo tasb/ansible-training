@@ -1,5 +1,21 @@
 # Lab 01 - Run Ad-Hoc Commands
 
+## Contents
+
+- [Objective](#objective)
+- [Prerequisites](#prerequisites)
+- [Guide](#guide)
+  - [Step 1: Verify Ansible installation](#step-1-verify-ansible-installation)
+  - [Step 2: Run first ad-hoc command](#step-2-run-first-ad-hoc-command)
+  - [Step 3: Copy file locally](#step-3-copy-file-locally)
+  - [Step 4: Create SSH keys](#step-4-create-ssh-keys)
+  - [Step 5: Create inventory file](#step-5-create-inventory-file)
+  - [Step 6: Run ping command on multiple nodes](#step-6-run-ping-command-on-multiple-nodes)
+  - [Step 7: Run ping command using nodes group name](#step-7-run-ping-command-using-nodes-group-name)
+  - [Step 8: Copy file to multiple nodes](#step-8-copy-file-to-multiple-nodes)
+  - [Step 9: Run command on multiple nodes](#step-9-run-command-on-multiple-nodes)
+- [Conclusion](#conclusion)
+
 ## Objective
 
 This lab is designed to provide hands-on experience with Ansible, focusing on fundamental tasks such as verifying installation, managing files, creating SSH keys, and executing basic commands on remote nodes.
@@ -78,51 +94,47 @@ ansible localhost -m ansible.builtin.copy -a "src=~/hello.txt dest=/tmp/"
 
 ### Step 4: Create SSH keys
 
-**Please confirm if you need to perform this step before proceeding. If not, please continue to next step.**
+For this step check on next image the infrastructure diagram to be used during all the labs:
 
-For this step you need to know the following information:
+![Infrastructure Diagram](./images/lab01/image01.png)
 
-- The server names/IPs that you will be managing
-- The user to login to each server using
+You are running this commands from `controler` node and your managed nodes are `servidor-0` and `servidor-1`.
 
 To generate new SSH keys, you can use  run the following command:
 
 ```bash
-ansible localhost -m ansible.builtin.openssh_keypair -a "path=/home/<user>/.ssh/ansible"
+ansible localhost -m ansible.builtin.openssh_keypair -a "path=/home/vagrant/.ssh/ansible"
 ```
 
-Replace `<user>` with the user you will be using to login on localhost.
-
-Now, copy the public key to the remote server:
+Now, copy the public key to the remote server `servidor-0`:
 
 ```bash
-ssh-copy-id -i ~/.ssh/ansible.pub <user>@<server>
+ssh-copy-id -i ~/.ssh/ansible.pub vagrant@servidor-0
 ```
 
-Replace `<user>` with the user you will be using to login on the remote server and `<server>` with the server name/IP.
+You should get a prompt to enter the password for the `vagrant` user. Enter the password and press `Enter`.
 
-Repeat this step for each server you will be managing.
+Repeat this step for the remote server `servidor-1`:
 
-Create a file named `ansible.cfg` in `lab01` directory and add the following content:
+```bash
+ssh-copy-id -i ~/.ssh/ansible.pub vagrant@servidor-1
+```
+
+Finally, to reference the key in Ansible, you need to create a file named `ansible.cfg` in `lab01` directory and add the following content:
 
 ```bash
 [defaults]
-private_key_file = /home/<user>/.ssh/ansible
+private_key_file = /home/vagrant/.ssh/ansible
 ```
 
 ### Step 5: Create inventory file
 
-Create a file named `inventory.yml` in `lab01` directory and add the following content:
+Create a file named `inventory.ini` in `lab01` directory and add the following content:
 
-```bash
-all:
-  children:
-    nodes:
-      hosts:
-        srv1:
-          ansible_host: <srv1_ip_address>
-        srv2:
-          ansible_host: <srv2_ip_address>
+```ini
+[nodes]
+servidor-0
+servidor-1
 ```
 
 ### Step 6: Run ping command on multiple nodes
@@ -130,17 +142,17 @@ all:
 Run the following command to ping all nodes:
 
 ```bash
-ansible all -i inventory.yml -m ansible.builtin.ping
+ansible all -i inventory.ini -m ansible.builtin.ping
 ```
 
 Since you're running for 2 nodes, you should see output similar to the following:
 
 ```bash
-srv1 | SUCCESS => {
+servidor-0 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-srv2 | SUCCESS => {
+servidor-1 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
@@ -151,14 +163,14 @@ To use the inventory file, you need to use the `-i` option. This option allows y
 You can use `ansible-inventory` command to list all hosts:
 
 ```bash
-ansible-inventory -i inventory.yml --list
+ansible-inventory -i inventory.ini --list
 ```
 
 To avoid using the `-i` option every time you run a command, you can create a file named `ansible.cfg` in `lab01` directory and add the following content:
 
 ```bash
 [defaults]
-inventory = inventory.yml
+inventory = inventory.ini
 ```
 
 ### Step 7: Run ping command using nodes group name
@@ -172,11 +184,11 @@ ansible nodes -m ansible.builtin.ping
 Since you're running for 2 nodes, you should see output similar to the following:
 
 ```bash
-srv1 | SUCCESS => {
+servidor-0 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-srv2 | SUCCESS => {
+servidor-1 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
@@ -201,13 +213,13 @@ ansible all -m ansible.builtin.copy -a "src=/tmp/hello.txt dest=/tmp/"
 You should see output similar to the following:
 
 ```bash
-srv1 | CHANGED => {
+servidor-0 | CHANGED => {
     "changed": true,
     "checksum": "e2fc714c4727ee9395f324cd2e7f331f",
     "dest": "/tmp/hello.txt"
     ...
 }
-srv2 | CHANGED => {
+servidor-1 | CHANGED => {
     "changed": true,
     "checksum": "e2fc714c4727ee9395f324cd2e7f331f",
     "dest": "/tmp/hello.txt"
@@ -226,10 +238,10 @@ ansible all -m ansible.builtin.shell -a "ls /tmp"
 You should see output similar to the following:
 
 ```bash
-srv1 | CHANGED | rc=0 >>
+servidor-0 | CHANGED | rc=0 >>
 hello.txt
 ...
-srv2 | CHANGED | rc=0 >>
+servidor-1 | CHANGED | rc=0 >>
 hello.txt
 ...
 ```
@@ -243,9 +255,9 @@ ansible all -m ansible.builtin.shell -a "cat /tmp/hello.txt"
 You should see output similar to the following:
 
 ```bash
-srv1 | CHANGED | rc=0 >>
+servidor-0 | CHANGED | rc=0 >>
 Hello World
-srv2 | CHANGED | rc=0 >>
+servidor-1 | CHANGED | rc=0 >>
 Hello World
 ```
 
