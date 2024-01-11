@@ -166,10 +166,9 @@ You can use `ansible-inventory` command to list all hosts:
 ansible-inventory -i inventory.ini --list
 ```
 
-To avoid using the `-i` option every time you run a command, you can create a file named `ansible.cfg` in `lab01` directory and add the following content:
+To avoid using the `-i` option every time you run a command, you can add the following content in `ansible.cfg` file in `lab01` directory:
 
 ```bash
-[defaults]
 inventory = inventory.ini
 ```
 
@@ -199,7 +198,7 @@ On this case, the result is the same as the previous step, since we only have th
 But you can also run the following command to ping one node:
 
 ```bash
-ansible nodes -m ansible.builtin.ping -l srv2
+ansible nodes -m ansible.builtin.ping -l servidor-0
 ```
 
 ### Step 8: Copy file to multiple nodes
