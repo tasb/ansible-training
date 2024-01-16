@@ -12,6 +12,12 @@ ansible-inventory -i inventory/dev --list
 ansible-inventory -i inventory/prod --list --yaml
 ```
 
+## Check inventory in graph format
+
+```bash
+ansible-inventory -i inventory/prod --graph
+```
+
 ## Run ping command on dev env
 
 ```bash

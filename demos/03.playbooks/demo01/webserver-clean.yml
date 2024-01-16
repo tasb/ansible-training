@@ -1,0 +1,12 @@
+---
+- name: Install and Test Nginx
+  hosts: webserver
+  become: true
+  vars:
+    nginx_version: "1.18.*"  # Specify the Nginx version here
+
+  tasks:
+    - name: Install Nginx
+      ansible.builtin.apt:
+        name: "nginx={{ nginx_version }}"
+        state: absent
