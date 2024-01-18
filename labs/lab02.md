@@ -21,6 +21,7 @@ Create an Ansible static inventory file in YAML format that categorizes two serv
 - [ ] Create a folder named `lab02` inside `ansible-labs`
 - [ ] Navigate to `lab02` folder
 - [ ] Finish [Lab 01](lab02.md) to ensure you have access to managed nodes
+- [ ] Copy the `ansible.cfg` file from `lab01` folder to `lab02` folder
 
 ## Guide
 
