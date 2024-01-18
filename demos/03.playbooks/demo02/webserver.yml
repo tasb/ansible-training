@@ -8,7 +8,7 @@
     nginx_version: 1.18.*
   tasks:
     - name: Update and upgrade apt packages
-      apt:
+      ansible.builtin.apt:
         update_cache: yes
         cache_valid_time: 86400 #One day
     
@@ -24,7 +24,7 @@
         enabled: yes
 
     - name: Ensure the static files directory exists
-      file:
+      ansible.builtin.file:
         path: "{{ static_files_path }}"
         state: directory
         owner: root
@@ -32,7 +32,7 @@
         mode: '0755'
 
     - name: Copy static files from control node to target
-      copy:
+      ansible.builtin.copy:
         src: "./static/"
         dest: "{{ static_files_path }}"
         owner: root
@@ -40,13 +40,13 @@
         mode: '0644'
 
     - name: Replace "/var/www/html;" with "/opt/nginx/static;"
-      replace:
+      ansible.builtin.replace:
         path: /etc/nginx/sites-available/default
         regexp: "^\\s*root\\s+/var/www/html;"
         replace: "        root {{ static_files_path }};"
 
     - name: Reload Nginx to apply changes
-      service:
+      ansible.builtin.service:
         name: nginx
         state: reloaded
 

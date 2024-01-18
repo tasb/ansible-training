@@ -38,11 +38,11 @@ Add the following content to the file:
   become: true
   tasks:
     - name: Install Apache
-      yum:
+      ansible.builtin.yum:
         name: httpd
         state: latest
     - name: Start Apache
-      service:
+      ansible.builtin.service:
         name: httpd
         state: started
 ```
@@ -108,12 +108,12 @@ Add the following content to the file after the `Start Apache` task:
 
 ```yaml
     - name: Open port 80 on firewall
-      firewalld:
+      ansible.builtin.firewalld:
         port: 80/tcp
         permanent: true
         state: enabled
     - name: Reload firewalld
-      service:
+      ansible.builtin.service:
         name: firewalld
         state: reloaded
 ```
@@ -188,7 +188,7 @@ Add the following content to the file after the `Reload firewalld` task:
 
 ```yaml
     - name: Copy index.html
-      copy:
+      ansible.builtin.copy:
         src: index.html
         dest: /var/www/html/index.html
 ```
@@ -240,12 +240,12 @@ Add the following content to the `webserver.yml` file after the `Copy index.html
 
 ```yaml
     - name: Run smoke test
-      uri:
+      ansible.builtin.uri:
         url: http://servidor-0
         return_content: yes
       register: result
     - name: Debug smoke test
-      debug:
+      ansible.builtin.debug:
         msg: "{{ result.content }}"
 ```
 
