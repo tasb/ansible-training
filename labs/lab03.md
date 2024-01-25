@@ -159,7 +159,7 @@ Add the following content to the file after the `Reload firewalld` task:
         dest: /var/www/html/index.html
 ```
 
-Pay attention to the indentation. The task should be at the same level as the `Reload firewalld` task.
+Pay attention to the indentation. The task should be at the same level as the `Start Apache` task.
 
 Run the playbook again:
 
@@ -196,7 +196,7 @@ servidor-0          : ok=6    changed=2    unreachable=0    failed=0    skipped=
 
 Check that task `Reload firewalld` continues to be `changed` because we are reloading every time the firewall service.
 
-Now navigate to the URL <http://servidor-0> and you should see the new page.
+Now navigate to the URL <http://servidor-0.seg-social.virt> and you should see the new page.
 
 ### Step 6: Add a smoke test
 
@@ -207,7 +207,7 @@ Add the following content to the `webserver.yml` file after the `Copy index.html
 ```yaml
     - name: Run smoke test
       ansible.builtin.uri:
-        url: http://servidor-0
+        url: http://servidor-0.seg-social.virt
         return_content: yes
       register: result
     - name: Debug smoke test
