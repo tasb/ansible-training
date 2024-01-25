@@ -181,12 +181,6 @@ ok: [servidor-0]
 TASK [Start Apache] **********************************************************
 ok: [servidor-0]
 
-TASK [Open port 80 on firewall] **********************************************
-ok: [servidor-0]
-
-TASK [Reload firewalld] ********************************************************
-changed: [servidor-0]
-
 TASK [Copy index.html] *******************************************************
 changed: [servidor-0]
 
