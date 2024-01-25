@@ -188,8 +188,6 @@ PLAY RECAP *********************************************************************
 servidor-0          : ok=6    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-Check that task `Reload firewalld` continues to be `changed` because we are reloading every time the firewall service.
-
 Now navigate to the URL <http://servidor-0.seg-social.virt> and you should see the new page.
 
 ### Step 6: Add a smoke test
