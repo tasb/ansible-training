@@ -150,7 +150,7 @@ Now, let's update the playbook to copy the file to the web server.
 
 Update the `webserver.yml` file to add a new task to copy the file to the web server.
 
-Add the following content to the file after the `Reload firewalld` task:
+Add the following content to the file after the last task:
 
 ```yaml
     - name: Copy index.html
