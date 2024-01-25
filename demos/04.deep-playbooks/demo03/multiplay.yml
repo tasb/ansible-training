@@ -1,0 +1,42 @@
+---
+- name: Configure Web Server
+  hosts: webserver
+  become: yes
+  tasks:
+    - name: Install Nginx on Ubuntu
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Ensure Nginx service is running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+
+    - name: Perform Nginx smoke test
+      ansible.builtin.uri:
+        url: "http://{{ inventory_hostname }}:80"
+        status_code: 200
+        timeout: 10
+        return_content: yes
+      register: nginx_smoke_test
+
+- name: Configure Database Server
+  hosts: db
+  become: yes
+  tasks:
+    - name: Install PostgreSQL on Rocky Linux
+      ansible.builtin.yum:
+        name: postgresql-server
+        state: present
+
+    - name: Ensure PostgreSQL service is running
+      ansible.builtin.service:
+        name: postgresql
+        state: started
+
+    - name: Perform PostgreSQL smoke test
+      ansible.builtin.shell: 'psql --version'
+      register: postgres_smoke_test
+      ignore_errors: yes
+

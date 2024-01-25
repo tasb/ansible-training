@@ -5,10 +5,10 @@
 - [Objective](#objective)
 - [Prerequisites](#prerequisites)
 - [Guide](#guide)
-  - [Step 1: Create the Playbook](#step-1-create-the-playbook)
-  - [Step 2: Run the Playbook](#step-2-run-the-playbook)
-  - [Step 3: Test the Web Server](#step-3-test-the-web-server)
-  - [Step 4: Update the Playbook](#step-4-update-the-playbook)
+  - [Step 1: Add connection details on inventory](#step-1-add-connection-details-on-inventory)
+  - [Step 2: Create the Playbook](#step-2-create-the-playbook)
+  - [Step 3: Run the Playbook](#step-3-run-the-playbook)
+  - [Step 4: Test the Web Server](#step-4-test-the-web-server)
   - [Step 5: Change homepage](#step-5-change-homepage)
   - [Step 6: Add a smoke test](#step-6-add-a-smoke-test)
 - [Conclusion](#conclusion)
@@ -25,7 +25,41 @@ Create an Ansible playbook that installs and configures a web server on a manage
 
 ## Guide
 
-### Step 1: Create the Playbook
+### Step 1: Add connection details on inventory
+
+Create a file called `all.yml` inside `inventory/group_vars` folder.
+
+Add the following content to the file:
+
+```yaml
+ansible_private_key_file: /home/vagrant/.ssh/ansible
+ansible_user: vagrant
+```
+
+With this, we are telling Ansible to use the private key file `/home/vagrant/.ssh/ansible` to connect to the managed nodes and to use the user `vagrant`.
+
+This configuration replace the need to use `ansible.cfg` file.
+
+Let's test the connection:
+
+```bash
+ansible -i inventory all -m ping
+```
+
+You should see output similar to the following:
+
+```bash
+servidor-0 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+servidor-1 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+```
+
+### Step 2: Create the Playbook
 
 Create a file named `webserver.yml` inside `lab03` folder.
 
@@ -54,7 +88,7 @@ On this playbook, we are:
 - Setting the `become` option to `true` to run the tasks as root
 - Setting the `hosts` option to `webserver` to run the tasks on the hosts in the `webserver` group
 
-### Step 2: Run the Playbook
+### Step 3: Run the Playbook
 
 Run the playbook using the `ansible-playbook` command:
 
@@ -82,83 +116,15 @@ PLAY RECAP *********************************************************************
 servidor-0          : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-### Step 3: Test the Web Server
+### Step 4: Test the Web Server
 
 Run the following command to test the web server:
 
 ```bash
-curl http://servidor-0
+curl http://servidor-0.seg-social.virt
 ```
 
-You should see output similar to the following:
-
-```bash
-curl: (7) Failed to connect to servidor-0 port 80 after 5 ms: Couldn't connect to server
-```
-
-This is expected because we haven't opened port 80 on the firewall.
-
-Let's use Ansible to open the port on the firewall.
-
-### Step 4: Update the Playbook
-
-Update the `webserver.yml` file to add a new task to open port 80 on the firewall.
-
-Add the following content to the file after the `Start Apache` task:
-
-```yaml
-    - name: Open port 80 on firewall
-      ansible.builtin.firewalld:
-        port: 80/tcp
-        permanent: true
-        state: enabled
-    - name: Reload firewalld
-      ansible.builtin.service:
-        name: firewalld
-        state: reloaded
-```
-
-Pay attention to the indentation. The tasks should be at the same level as the `Start Apache` task.
-
-Run the playbook again:
-
-```bash
-ansible-playbook -i inventory/inventory.yml webserver.yml
-```
-
-You should see output similar to the following:
-
-```bash
-PLAY [Install and configure web server] ****************************************************
-
-TASK [Gathering Facts] *********************************************************************
-ok: [servidor-0]
-
-TASK [Install Apache] **********************************************************************
-ok: [servidor-0]
-
-TASK [Start Apache] ************************************************************************
-ok: [servidor-0]
-
-TASK [Open port 80 on firewall] ************************************************************
-changed: [servidor-0]
-
-TASK [Reload firewalld] **********************************************************************
-changed: [servidor-0]
-
-PLAY RECAP *********************************************************************************
-servidor-0          : ok=4    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
-```
-
-Check that in the 2 tasks that we ran before, you get a `ok` status instead of `changed`. This is because the tasks were already run before and there was no need to run them again.
-
-Now let's test the web server again:
-
-```bash
-curl http://servidor-0
-```
-
-On the output, you should see the HTML code of the default Apache page.
+You should get an HTML page as output.
 
 You can also open the URL on your browser to see the page.
 

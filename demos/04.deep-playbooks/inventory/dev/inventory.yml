@@ -1,0 +1,8 @@
+webserver:
+  hosts:
+    tiberna-rasp-001:
+      ansible_user: ubuntu
+db:
+  hosts:
+    tiberna-rocky-001:
+      ansible_user: tiberna
