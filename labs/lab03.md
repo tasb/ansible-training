@@ -150,7 +150,7 @@ Now, let's update the playbook to copy the file to the web server.
 
 Update the `webserver.yml` file to add a new task to copy the file to the web server.
 
-Add the following content to the file after the `Reload firewalld` task:
+Add the following content to the file after the last task:
 
 ```yaml
     - name: Copy index.html
@@ -181,20 +181,12 @@ ok: [servidor-0]
 TASK [Start Apache] **********************************************************
 ok: [servidor-0]
 
-TASK [Open port 80 on firewall] **********************************************
-ok: [servidor-0]
-
-TASK [Reload firewalld] ********************************************************
-changed: [servidor-0]
-
 TASK [Copy index.html] *******************************************************
 changed: [servidor-0]
 
 PLAY RECAP ************************************************************************************************
 servidor-0          : ok=6    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
-
-Check that task `Reload firewalld` continues to be `changed` because we are reloading every time the firewall service.
 
 Now navigate to the URL <http://servidor-0.seg-social.virt> and you should see the new page.
 
