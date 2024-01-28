@@ -221,6 +221,36 @@ Let's run the playbook again:
 ansible-playbook -i inventory/inventory.yml webserver.yml
 ```
 
+The playbook file context at the end should look like this:
+
+```yaml
+---
+- name: Install and configure web server
+  hosts: webserver
+  become: true
+  tasks:
+    - name: Install Apache
+      ansible.builtin.yum:
+        name: httpd
+        state: latest
+    - name: Start Apache
+      ansible.builtin.service:
+        name: httpd
+        state: started
+    - name: Copy index.html
+      ansible.builtin.copy:
+        src: index.html
+        dest: /var/www/html/index.html
+    - name: Run smoke test
+      ansible.builtin.uri:
+        url: http://servidor-0.seg-social.virt
+        return_content: yes
+      register: result
+    - name: Debug smoke test
+      ansible.builtin.debug:
+        msg: "{{ result.content }}"
+```
+
 ## Conclusion
 
 In this lab, we created our first playbook to install and configure a web server. You also learned how to run a playbook and how to update it to add new tasks.
