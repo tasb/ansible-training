@@ -33,7 +33,7 @@
 
     - name: Ensure script is executable
       become: true
-      file:
+      ansible.builtin.file:
         path: "{{ dynamic_fact_folder }}/list_folders.fact"
         mode: '0755'
 

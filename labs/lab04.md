@@ -1,5 +1,17 @@
 # Lab 04 - Deep dive into Ansible Playbooks
 
+## Table of Contents
+
+- [Objectives](#objectives)
+- [Prerequisites](#prerequisites)
+- [Guide](#guide)
+  - [Step 1: Install Redis](#step-1-install-redis)
+  - [Step2: Work with handlers](#step2-work-with-handlers)
+  - [Step 3: Configure Redis](#step-3-configure-redis)
+  - [Step 4: Install PostgreSQL](#step-4-install-postgresql)
+  - [Step 5: Configure Apache](#step-5-configure-apache)
+  - [Step 6: Run the full playbook](#step-6-run-the-full-playbook)
+
 ## Objectives
 
 - Install and configure a Apache web server
@@ -11,7 +23,7 @@
 - [ ] Create a folder named `lab04` inside `ansible-labs`
 - [ ] Navigate to `lab04` folder
 - [ ] Copy the `inventory` folder from `lab03` to `lab04`
-  - Command: `cp -r ../lab03/inventory inventory`
+  - Command: `cp -r ../lab03/inventory ./inventory`
 
 ## Guide
 
@@ -70,7 +82,7 @@ On this playbook, we are:
 - Using the `command` module to run the `redis-cli ping` command and register the output
 - Using the `debug` module to print the output of the `redis-cli ping` command
 
-On play definition we're incluing the tag `redis` to the play. This will allow us to run only the tasks with this tag.
+On play definition we're including the tag `redis` to the play. This will allow us to run only the tasks with this tag.
 
 Now let's run the playbook:
 
@@ -80,11 +92,13 @@ ansible-playbook -i inventory/inventory.yml full_playbook.yml
 
 You should see an error on the output when trying to run `Test Redis` task.
 
-This is because even we installed Redis, we didn't started the service yet.
+This is because even you installed Redis, you didn't started the service.
 
-You notified the `Start Redis` handler, but it will only run when the task fails.
+You notified the `Start Redis` handler, but it will only run when the all playbook tasks run.
 
-So let's add a `meta` task to force the handler to run. Edit the file `full_playbook.yml` and add the following task before the `Test Redis` task:
+### Step2: Work with handlers
+
+Now let's add a `meta` task to force the handler to run. Edit the file `full_playbook.yml` and add the following task before the `Test Redis` task:
 
 ```yaml
 - name: Force handler execution
@@ -94,6 +108,36 @@ So let's add a `meta` task to force the handler to run. Edit the file `full_play
 Pay attention to the indentation. This task should be at the same level as the other tasks.
 
 Now let's run the playbook again:
+
+```bash
+ansible-playbook -i inventory/inventory.yml full_playbook.yml
+```
+
+Even forcing the handler to run, you'll get an error on the `Test Redis` task.
+
+This is because that the task `Install Redis` returned an `OK` result and Ansible only runs the handler notified by a task if the task returns a `Changed` result.
+
+To force the handler to run, you need to change the `Install Redis` task to return a `Changed` result. You will use the `changed_when` option to do this.
+
+Edit the file `full_playbook.yml` and change the `Install Redis` task to the following:
+
+```yaml
+- name: Install Redis
+  ansible.builtin.yum:
+    name: redis
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+  register: redis_installed
+  changed_when: redis_installed.rc == 0
+  notify:
+    - Start Redis
+```
+
+On this task, you are using the `changed_when` option to change the result of the task to `Changed` when the `rc` attribute of the `redis_installed` variable is `0`.
+
+The `rc` attribute is the return code of the task. When the task runs without any error, the return code is `0`.
+
+Let's run the playbook again:
 
 ```bash
 ansible-playbook -i inventory/inventory.yml full_playbook.yml
@@ -111,7 +155,7 @@ ok: [servidor-1] => {
 }
 ```
 
-### Step 2: Configure Redis
+### Step 3: Configure Redis
 
 On this step, we'll configure Redis to add a password.
 
@@ -223,7 +267,7 @@ ok: [servidor-1] => {
 
 Having the password on the playbook is not a good practice. We're doing this way just for learning purposes and to be changed in a later lab when we introduce Ansible Vault.
 
-### Step 3: Install PostgreSQL
+### Step 4: Install PostgreSQL
 
 Now let's install PostgreSQL.
 
@@ -331,7 +375,7 @@ ansible-playbook -i inventory/inventory.yml full_playbook.yml --tags postgresql
 
 And confirm that only the testing tasks returns a `Changed` result.
 
-### Step 4: Configure Apache
+### Step 5: Configure Apache
 
 Now you need to add to this playbook the tasks to install and configure Apache.
 
@@ -362,7 +406,7 @@ ansible-playbook -i inventory/inventory.yml full_playbook.yml --tags webserver
 
 You should see the tasks from the `webserver.yml` playbook running.
 
-### Step 5: Run the full playbook
+### Step 6: Run the full playbook
 
 Now let's run the full playbook without setting any tag.
 
