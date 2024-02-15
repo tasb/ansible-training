@@ -408,6 +408,115 @@ You should see the tasks from the `webserver.yml` playbook running.
 
 ### Step 6: Run the full playbook
 
+After you added all the tasks, your `full_playbook.yml` should look like this:
+
+```yaml
+---
+- name: Install and configure Redis
+  hosts: all
+  become: true
+  tags:
+    - redis
+  vars:
+    redis_password: ansible
+  tasks:
+    - name: Install Redis
+      ansible.builtin.yum:
+        name: redis
+        state: absent
+      when: ansible_facts['os_family'] == "RedHat"
+      register: redis_installed
+      changed_when: redis_installed.rc == 0
+      notify:
+        - Start Redis
+
+    - name: Print
+      ansible.builtin.debug:
+        msg: "{{ redis_installed }}"
+
+    - name: Install Redis
+      ansible.builtin.apt:
+        name: redis-server
+        state: present
+      when: ansible_facts['os_family'] == "Debian"
+      notify:
+        - Start Redis
+
+    - meta: flush_handlers
+
+    - name: Test Redis
+      ansible.builtin.command: redis-cli -a {{ redis_password }} ping
+      register: redis_ping
+
+    - name: Print Redis ping
+      ansible.builtin.debug:
+        msg: "{{ redis_ping.stdout }}"
+
+    - name: Configure Redis
+      ansible.builtin.replace:
+        path: /etc/redis/redis.conf
+        regexp: '^# requirepass foobared'
+        replace: 'requirepass {{ redis_password }}'
+        backup: yes
+      notify:
+        - Restart Redis
+
+  handlers:
+    - name: Start Redis
+      service:
+        name: redis
+        state: started
+        enabled: true
+
+    - name: Restart Redis
+      service:
+        name: redis
+        state: restarted
+
+- name: Install and configure PostgreSQL
+  hosts: db
+  become: true
+  gather_facts: false
+  tags:
+    - postgresql
+  tasks:
+    - name: Install PostgreSQL
+      ansible.builtin.package:
+        name: postgresql-server
+        state: present
+
+    - name: "Find out if PostgreSQL is initialized"
+      ansible.builtin.stat:
+        path: "/var/lib/pgsql/data/pg_hba.conf"
+      register: postgres_data
+
+    - name: "Initialize PostgreSQL"
+      shell: "postgresql-setup --initdb"
+      when: not postgres_data.stat.exists
+
+    - name: Start PostgreSQL
+      service:
+        name: postgresql
+        state: started
+        enabled: true
+
+    - name: Test PostgreSQL
+      become: true
+      become_user: postgres
+      ansible.builtin.shell: |
+        psql -c "SELECT version();"
+      register: postgresql_version
+
+    - name: Print PostgreSQL version
+      ansible.builtin.debug:
+        msg: "{{ postgresql_version.stdout }}"
+
+- name: Install and configure web server
+  tags:
+    - webserver
+  import_playbook: webserver.yml
+```
+
 Now let's run the full playbook without setting any tag.
 
 ```bash
