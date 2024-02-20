@@ -309,14 +309,14 @@ You can check more details about this module on the [Ansible documentation](http
 Then, you need to add the task to initialize the database:
 
 ```yaml
-- name: "Find out if PostgreSQL is initialized"
-  ansible.builtin.stat:
-    path: "/var/lib/pgsql/data/pg_hba.conf"
-  register: postgres_data
-
-- name: "Initialize PostgreSQL"
-  shell: "postgresql-setup --initdb"
-  when: not postgres_data.stat.exists
+    - name: "Find out if PostgreSQL is initialized"
+      ansible.builtin.stat:
+        path: "/var/lib/pgsql/data/pg_hba.conf"
+      register: postgres_data
+    
+    - name: "Initialize PostgreSQL"
+      shell: "postgresql-setup --initdb"
+      when: not postgres_data.stat.exists
 ```
 
 These tasks will check if the file `/var/lib/pgsql/data/pg_hba.conf` exists and if not, will initialize the database.
@@ -328,11 +328,11 @@ When adding this to the file pay attention to the indentation. These tasks shoul
 Then, you need to add the task to start the service:
 
 ```yaml
-- name: Start PostgreSQL
-    service:
-    name: postgresql
-    state: started
-    enabled: true
+    - name: Start PostgreSQL
+        service:
+        name: postgresql
+        state: started
+        enabled: true
 ```
 
 This task will use the `service` module to start the PostgreSQL service.
@@ -340,16 +340,16 @@ This task will use the `service` module to start the PostgreSQL service.
 Finally, you need to add the tasks to test if PostgreSQL is running:
 
 ```yaml
-- name: Test PostgreSQL
-    become: true
-    become_user: postgres
-    ansible.builtin.shell: |
-    psql -c "SELECT version();"
-    register: postgresql_version
-
-- name: Print PostgreSQL version
-    ansible.builtin.debug:
-    msg: "{{ postgresql_version.stdout }}"  
+    - name: Test PostgreSQL
+        become: true
+        become_user: postgres
+        ansible.builtin.shell: |
+        psql -c "SELECT version();"
+        register: postgresql_version
+    
+    - name: Print PostgreSQL version
+        ansible.builtin.debug:
+        msg: "{{ postgresql_version.stdout }}"  
 
 ```
 
