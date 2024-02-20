@@ -328,11 +328,11 @@ When adding this to the file pay attention to the indentation. These tasks shoul
 Then, you need to add the task to start the service:
 
 ```yaml
-    - name: Start PostgreSQL
-        service:
-        name: postgresql
-        state: started
-        enabled: true
+- name: Start PostgreSQL
+  anisble.builtin.service:
+    name: postgresql
+    state: started
+    enabled: true
 ```
 
 This task will use the `service` module to start the PostgreSQL service.
@@ -340,17 +340,16 @@ This task will use the `service` module to start the PostgreSQL service.
 Finally, you need to add the tasks to test if PostgreSQL is running:
 
 ```yaml
-    - name: Test PostgreSQL
-        become: true
-        become_user: postgres
-        ansible.builtin.shell: |
-        psql -c "SELECT version();"
-        register: postgresql_version
+- name: Test PostgreSQL
+  become: true
+  become_user: postgres
+  ansible.builtin.shell: |
+    psql -c "SELECT version();"
+    register: postgresql_version
     
-    - name: Print PostgreSQL version
-        ansible.builtin.debug:
-        msg: "{{ postgresql_version.stdout }}"  
-
+- name: Print PostgreSQL version
+  ansible.builtin.debug:
+    msg: "{{ postgresql_version.stdout }}"  
 ```
 
 On this task you are using the `shell` module to run the `psql -c "SELECT version();"` command as the `postgres` user and register the output.
