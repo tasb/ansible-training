@@ -164,7 +164,7 @@ Edit the file `full_playbook.yml` and add the following task after the `Print Re
 ```yaml
 - name: Configure Redis
   ansible.builtin.replace:
-    path: /etc/redis.conf
+    path: /etc/redis/redis.conf
     regexp: '^# requirepass foobared'
     replace: 'requirepass ansible'
     backup: yes
@@ -239,7 +239,7 @@ Finally, to make use of the variable, edit the `Configure Redis` task and change
 ```yaml
 - name: Configure Redis
   ansible.builtin.replace:
-    path: /etc/redis.conf
+    path: /etc/redis/redis.conf
     regexp: '^# requirepass foobared'
     replace: 'requirepass {{ redis_password }}'
     backup: yes
