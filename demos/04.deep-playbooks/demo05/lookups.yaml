@@ -7,7 +7,7 @@
         services_list: "{{ lookup('file', './services.conf').splitlines() }}"
 
     - name: Check service status
-      service:
+      ansible.builtin.service:
         name: "{{ item }}"
         state: started
       loop: "{{ services_list }}"
