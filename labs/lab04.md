@@ -345,7 +345,7 @@ Finally, you need to add the tasks to test if PostgreSQL is running:
   become_user: postgres
   ansible.builtin.shell: |
     psql -c "SELECT version();"
-    register: postgresql_version
+  register: postgresql_version
     
 - name: Print PostgreSQL version
   ansible.builtin.debug:
