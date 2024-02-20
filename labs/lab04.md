@@ -226,7 +226,7 @@ vars:
 
 This block should be added before the `tasks` section. Pay attention to the indentation.
 
-Then, edit the `Print Redis ping` task and change the `command` module to use the `redis-cli` command with the password:
+Then, edit the `Test Redis` task and change the `command` module to use the `redis-cli` command with the password:
 
 ```yaml
 - name: Test Redis
