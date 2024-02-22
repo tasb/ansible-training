@@ -70,6 +70,8 @@ You must see the following files and directories:
     └── main.yml
 ```
 
+
+
 ## Step 02: Update documentation and meta files
 
 Update the `README.md` file with the role description and usage with the content available on this [README.md](lab05/README.md) file.
@@ -369,7 +371,7 @@ If you want to make your role available on a Git repository, you can use the fol
 8. Run the playbook using the role from the repository:
 
     ```bash
-    ansible-playbook -i inventory/dev playbook.yml
+    ansible-playbook -i inventory playbook.yml
     ```
 
 9. Check the output and see if there's any change. Since you didn't changed the variables for using the role, you should not see any change.
