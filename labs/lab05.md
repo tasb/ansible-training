@@ -110,12 +110,6 @@ galaxy_info:
 
   # Dependencies are other roles that this role depends upon to function
 dependencies: []
-
-  # Specify minimum Ansible version
-
-
-  # Optional: If your role has a README.md file, you can specify its name here. The default is README.md.
-readme: README.md
 ```
 
 ## Step 03: Create variables file
