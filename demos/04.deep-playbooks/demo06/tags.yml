@@ -1,5 +1,5 @@
 - name: Example Playbook
-  hosts: webserver
+  hosts: proxmox
   gather_facts: no
   tasks:
     - name: Task 1
