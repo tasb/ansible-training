@@ -120,11 +120,9 @@ readme: README.md
 
 ## Step 03: Create variables file
 
-Edit the `vars/main.yml` file with the following content:
+Edit the `defaults/main.yml` file with the following content:
 
 ```yaml
----
-# Default list of users to manage
 ---
 users_list:
   - name: exampleuser
