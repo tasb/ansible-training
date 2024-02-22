@@ -328,7 +328,7 @@ Pay attention on the `when` directive on the role definition, this is a conditio
 Run the playbook using the following command:
 
 ```bash
-ansible-playbook -i inventory/dev playbook.yml
+ansible-playbook -i inventory playbook.yml
 ```
 
 Take some time to look at the output and understand what is happening.
@@ -336,7 +336,7 @@ Take some time to look at the output and understand what is happening.
 Now execute the playbook again using the following command:
 
 ```bash
-ansible-playbook -i inventory/dev playbook.yml
+ansible-playbook -i inventory playbook.yml
 ```
 
 Check the output and see if there's any change.
