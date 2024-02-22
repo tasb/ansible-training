@@ -181,7 +181,7 @@ So you need to create the handler. Edit the file `full_playbook.yml` and add the
 
 ```yaml
 - name: Restart Redis
-  service:
+  ansible.builtin.service:
     name: redis
     state: restarted
 ```
@@ -316,7 +316,7 @@ Then, you need to add the task to initialize the database:
       register: postgres_data
     
     - name: "Initialize PostgreSQL"
-      shell: "postgresql-setup --initdb"
+      ansible.builtin.shell: "postgresql-setup --initdb"
       when: not postgres_data.stat.exists
 ```
 
@@ -330,7 +330,7 @@ Then, you need to add the task to start the service:
 
 ```yaml
 - name: Start PostgreSQL
-  anisble.builtin.service:
+  ansible.builtin.service:
     name: postgresql
     state: started
     enabled: true
@@ -385,6 +385,12 @@ So start to copy the file `webserver.yml` from `lab03` to `lab04`:
 
 ```bash
 cp ../lab03/webserver.yml .
+```
+
+You need to copy the file `index.html` from `lab03` to `lab04`:
+
+```bash
+cp ../lab03/index.html .
 ```
 
 Then, edit the file `full_playbook.yml` and use the `import_playbook` module to import the `webserver.yml` playbook:
