@@ -1,8 +1,8 @@
 ---
 - name: Configure Nginx
-  hosts: all
+  hosts: webserver
   become: true
-  # roles:
-  #   - role: tasb.nginx
-  #     vars:
-  #       initial_page_path: ./index.html
+  roles:
+    - role: tasb.nginx
+      vars:
+        initial_page_path: ./index.html

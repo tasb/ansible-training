@@ -70,6 +70,12 @@ You must see the following files and directories:
     └── main.yml
 ```
 
+On next steps you'll update the files and directories created.
+
+**Pay attention when pasting the content of the files, because the files have been initialized with some content that you'll need to replace.**
+
+**If you not replace that code, you'll get errors when executing the playbook.**
+
 ## Step 02: Update documentation and meta files
 
 Update the `README.md` file with the role description and usage with the content available on this [README.md](lab05/README.md) file.
@@ -257,7 +263,11 @@ Since the handlers only run when notified by a task that results in a change, yo
 
 Now it's time for you to use the role in a playbook.
 
-Create a playbook named `playbook.yml` and use the role `lab.usersandgroups` to manage the users and groups.
+Create a playbook named `playbook.yml` on folder `lab05`.
+
+This playbook will use the role `lab.usersandgroups` to manage the users and groups.
+
+The file should have the following content:
 
 ```yaml
 ---
