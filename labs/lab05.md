@@ -1,5 +1,20 @@
 # Lab 05 - Author your first Ansible Role
 
+## Table of Contents
+
+- [Objectives](#objectives)
+- [Prerequisites](#prerequisites)
+- [Guide](#guide)
+  - [Step 01: Understand the role structure](#step-01-understand-the-role-structure)
+  - [Step 02: Update documentation and meta files](#step-02-update-documentation-and-meta-files)
+  - [Step 03: Create variables file](#step-03-create-variables-file)
+  - [Step 04: Create tasks files](#step-04-create-tasks-files)
+  - [Step 05: Create handlers file](#step-05-create-handlers-file)
+  - [Step 06: Use the role in a playbook](#step-06-use-the-role-in-a-playbook)
+  - [Step 07: Run the playbook](#step-07-run-the-playbook)
+  - [Step 08: [Optional] Make the role available on a Git repository and use it in a playbook](#step-08-optional-make-the-role-available-on-a-git-repository-and-use-it-in-a-playbook)
+- [Conclusion](#conclusion)
+
 ## Objectives
 
 - Understand the role structure
@@ -64,16 +79,18 @@ Update the `meta/main.yml` file with the role metadata with following content:
 ```yaml
 galaxy_info:
   role_name: usersandgroups
-  author: Your Name
+  author: Ansible Training
   description: Manage users and groups on Linux/Unix systems
-  company: Your Company or Organization
+  company: Ansible Training
+  min_ansible_version: "2.9"
+  license: MIT
 
   # List of platforms you support and the versions, e.g., EL (Enterprise Linux) 7, 8, Ubuntu 18.04 (Bionic)
   platforms:
     - name: Rocky
       versions:
-        - 8.0
-        - 9.0
+        - "8.0"
+        - "9.0"
     - name: Ubuntu
       versions:
         - bionic
@@ -92,16 +109,12 @@ galaxy_info:
     - management
 
   # Dependencies are other roles that this role depends upon to function
-  dependencies: []
+dependencies: []
 
-# Specify minimum Ansible version
-min_ansible_version: 2.9
+  # Specify minimum Ansible version
 
-# License as applicable to your role
-license:
-  - MIT
 
-# Optional: If your role has a README.md file, you can specify its name here. The default is README.md.
+  # Optional: If your role has a README.md file, you can specify its name here. The default is README.md.
 readme: README.md
 ```
 
@@ -112,6 +125,7 @@ Edit the `vars/main.yml` file with the following content:
 ```yaml
 ---
 # Default list of users to manage
+---
 users_list:
   - name: exampleuser
     state: present
@@ -119,30 +133,21 @@ users_list:
     groups: ["examplegroup"]
     shell: "/bin/bash"
     createhome: yes
-    remove: no
-    ssh_key: ""
+    generate_ssh_key: true
+    default_folders:
+      - "Documents"
+      - "Downloads"
+      - "Music"
+      - "Pictures"
+      - "Videos"
 
 # Default list of groups to manage
 groups_list:
   - name: examplegroup
     state: present
 
-# Default values for user management
-default_shell: "/bin/bash"
-create_home: yes
-remove_home: no
-default_folders:
-  - "Documents"
-  - "Downloads"
-  - "Music"
-  - "Pictures"
-  - "Videos"
-
-
-# SSH key options
-manage_ssh_keys: false
-ssh_key_dir: ".ssh"
-authorized_keys_file: "authorized_keys"
+# Path to keep the fetched SSH keys
+destination_path_on_control_node: "/tmp"
 ```
 
 Please go through the file and understand the variables defined.
@@ -157,61 +162,84 @@ For now we're setting this sensitive information in plain text, but in a real-wo
 
 We'll go through Ansible Vault in the next lab.
 
-## Step 04: Create tasks file
+## Step 04: Create tasks files
 
-Now, let's edit the tasks file with the following content:
+On this step, you'll use the `include_tasks` module to include the tasks from the `users.yml` and `groups.yml` file.
+
+Let's update the `tasks/main.yml` file with the following content:
 
 ```yaml
 ---
-# Create groups
-- name: Ensure groups are present or absent
-  ansible.builtin.group:
-    name: "{{ item.name }}"
-    state: "{{ item.state }}"
-  loop: "{{ groups_list }}"
+# Loop to create groups
+- name: Create groups
+  include_tasks: groups.yml # include the tasks from the groups.yml file
+  loop: "{{ groups_list }}" # loop over the groups_list variable
+  loop_control:
+    loop_var: group # change the loop variable name to group
 
+# Loop to create users and subfolders
+- name: Create user and subfolders
+  include_tasks: users.yml # include the tasks from the users.yml file
+  loop: "{{ users_list }}" # loop over the users_list variable
+  loop_control:
+    loop_var: user # change the loop variable name to user
+```
+
+Now, let's create a `users.yml` file inside the `tasks` directory with the following content:
+
+```yaml
+---
+- name: Print user details
+  debug:
+    var: user
 # Create users
 - name: Ensure users are present or absent
   ansible.builtin.user:
-    name: "{{ item.name }}"
-    state: "{{ item.state }}"
-    password: "{{ item.password }}"
-    groups: "{{ item.groups }}"
-    shell: "{{ item.shell }}"
-    createhome: "{{ item.createhome }}"
-    remove: "{{ item.remove }}"
-    home: "{{ item.home }}"
-  loop: "{{ users_list }}"
+    name: "{{ user.name }}"
+    state: "{{ user.state }}"
+    password: "{{ user.password }}"
+    groups: "{{ user.groups }}"
+    shell: "{{ user.shell }}"
+    createhome: "{{ user.createhome }}"
+    generate_ssh_key: "{{ user.generate_ssh_key }}"
+    ssh_key_bits: 2048
+    ssh_key_file: ".ssh/id_rsa"
 
-# Manage SSH keys for users
-- name: Ensure SSH directories exist
+- name: Ensure home subfolders exist
   ansible.builtin.file:
-    path: "/home/{{ item.name }}/{{ ssh_key_dir }}"
+    path: "/home/{{ user.name }}/{{ item }}"
     state: directory
-    owner: "{{ item.name }}"
-    group: "{{ item.name }}"
-    mode: '0700'
-  loop: "{{ users_list }}"
-  when: manage_ssh_keys
+    owner: "{{ user.name }}"
+    group: "{{ user.name }}"
+    mode: '0755'
+  loop: "{{ user.default_folders}}"
 
-- name: Add authorized keys
-  ansible.builtin.authorized_key:
-    user: "{{ item.name }}"
-    state: present
-    key: "{{ item.ssh_key }}"
-  loop: "{{ users_list }}"
-  when: item.ssh_key | length > 0
+- name: Fetch private SSH key to control node
+  ansible.builtin.fetch:
+    src: "/home/{{ user.name }}/.ssh/id_rsa"
+    dest: "{{ destination_path_on_control_node }}/{{ inventory_hostname }}_{{ user.name }}_id_rsa"
+    flat: yes
   notify: reload sshd
 ```
 
-Now let's understand the tasks:
+On this file you created the following tasks:
 
-- The first task will create the groups defined in the `groups_list` variable.
-- The second task will create the users defined in the `users_list` variable.
-- The third task will ensure the SSH directories exist for the users.
-- The fourth task will add the authorized keys for the users.
-- The `notify` keyword will trigger the `reload sshd` handler when the user is created or modified.
-- This handler will restart the SSH service to apply the changes only when the task returns a changed status, meaning we only restart the service when we make changes to authorized keys.
+- The first task will print the user details to the console.
+- The second task will create the user referenced in the `user` variable, that was defined on the loop in the `main.yml` file.
+- The third task will ensure the home subfolders exist for the user.
+- The fourth task will fetch the private SSH key to the control node.
+
+Then, let's create a `groups.yml` file inside the `tasks` directory with the following content:
+
+```yaml
+---
+- name: Ensure groups are present or absent
+  ansible.builtin.group:
+    name: "{{ group.name }}"
+    state: "{{ group.state }}"
+```
+
+This file is simpler than the `users.yml` file, it only ensures that the groups are present or absent.
 
 ## Step 05: Create handlers file
 
@@ -224,34 +252,26 @@ Now, let's edit the `handlers/main.yml` file with the following content:
   ansible.builtin.service:
     name: sshd
     state: reloaded
-  when: manage_ssh_keys
   listen: "reload sshd"
 ```
 
+This handler show another way to use handlers, you can use the `listen` directive to define a custom trigger for the handler instead of using the handler name.
+
+The handler is notified by the `fetch` task in the `users.yml` file.
+
+Since the handlers only run when notified by a task that results in a change, you only see this handler to run if the `fetch` task copied a newer version of the SSH key to the control node.
+
 ## Step 06: Use the role in a playbook
 
-Create a playbook named `playbook.yml` and create a first play to generate SSH keys for the users.
+Now it's time for you to use the role in a playbook.
 
-```yaml
----
-- name: Generate SSH keys
-  hosts: localhost
-  become: yes
-  tasks:
-    - name: Generate SSH keys
-      ansible.builtin.openssh_keypair:
-        path: "./new_key"
-        size: 2048
-        state: present
-```
-
-Now, let's create a second play to use the role `lab.usersandgroups` to manage the users and groups.
+Create a playbook named `playbook.yml` and use the role `lab.usersandgroups` to manage the users and groups.
 
 ```yaml
 ---
 - name: Manage users and groups
-  hosts: all
-  become: yes
+  hosts: db
+  become: true
   roles:
     - role: lab.usersandgroups
       when: ansible_os_family == "RedHat"
@@ -261,12 +281,24 @@ Now, let's create a second play to use the role `lab.usersandgroups` to manage t
         state: present
         password: "{{ 'password123' | password_hash('sha512') }}"
         groups: ["wheel"]
-        ssh_key: "{{ lookup('file', './new_key') }}"
+        createhome: yes
+        generate_ssh_key: true
+        shell: "/bin/bash"
+        default_folders:
+          - "Documents"
+          - "Downloads"
+          - "Music"
+          - "Pictures"
+          - "Videos"
+        #ssh_key: "{{ lookup('file', './new_key') }}"
       - name: devuser
         state: present
         password: "{{ 'password123' | password_hash('sha512') }}"
         groups: ["wheel", "developers"]
-        ssh_key: "{{ lookup('file', './new_key') }}"
+        createhome: yes
+        generate_ssh_key: true
+        shell: "/bin/bash"
+        #ssh_key: "{{ lookup('file', './new_key') }}"
         default_folders:
           - "Documents"
           - "Downloads"
@@ -275,7 +307,9 @@ Now, let's create a second play to use the role `lab.usersandgroups` to manage t
         state: present
         password: "{{ 'password123' | password_hash('sha512') }}"
         groups: ["testers"]
-        ssh_key: "{{ lookup('file', './new_key') }}"
+        createhome: yes
+        generate_ssh_key: true
+        shell: "/bin/bash"
         default_folders:
           - "Documents"
           - "Downloads"
@@ -287,3 +321,73 @@ Now, let's create a second play to use the role `lab.usersandgroups` to manage t
         state: present
 ```
 
+On this playbook you use your role for creating 2 groups and 3 users.
+
+Pay attention on the `when` directive on the role definition, this is a conditional statement that will only run the role if the `ansible_os_family` is `RedHat`.
+
+## Step 07: Run the playbook
+
+Run the playbook using the following command:
+
+```bash
+ansible-playbook -i inventory/dev playbook.yml
+```
+
+Take some time to look at the output and understand what is happening.
+
+Now execute the playbook again using the following command:
+
+```bash
+ansible-playbook -i inventory/dev playbook.yml
+```
+
+Check the output and see if there's any change.
+
+In particular, check that the handler is not running again, because the SSH key was already fetched.
+
+Since you didn't change the `destination_path_on_control_node` variable, the SSH keys were fetch for the folder `/tmp` on the control node as defined as default on the `vars/main.yml` file.
+
+Just confirm that you got the keys from each user, running the following command:
+
+```bash
+ls -l /tmp
+```
+
+## Step 08: [Optional] Make the role available on a Git repository and use it in a playbook
+
+If you want to make your role available on a Git repository, you can use the following steps:
+
+1. Create a new repository on GitHub
+2. Clone the repository to your local machine
+3. Copy the `lab.usersandgroups` role to the repository. The root dir of your repo should contain the folders of the role.
+4. Commit and push the changes to the repository
+5. Create a `requirements.yml` file with the following content:
+
+    ```yaml
+    - src: <URL of your git repo>
+    version: main
+    name: lab.usersandgroups
+    ```
+
+6. Delete the `lab.usersandgroups` role from your local machine
+7. Run the following command to install the role from the repository:
+
+    ```bash
+    ansible-galaxy install -r requirements.yml
+    ```
+
+8. Run the playbook using the role from the repository:
+
+    ```bash
+    ansible-playbook -i inventory/dev playbook.yml
+    ```
+
+9. Check the output and see if there's any change. Since you didn't changed the variables for using the role, you should not see any change.
+
+## Conclusion
+
+You've created your first Ansible role and used it in a playbook.
+
+This lab allow you to understand the role structure, how to create a role, use the role in a playbook and understand the role variables.
+
+Additionally, you used some other techniques when authoring Ansible code.

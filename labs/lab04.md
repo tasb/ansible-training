@@ -11,6 +11,7 @@
   - [Step 4: Install PostgreSQL](#step-4-install-postgresql)
   - [Step 5: Configure Apache](#step-5-configure-apache)
   - [Step 6: Run the full playbook](#step-6-run-the-full-playbook)
+- [Conclusion](#conclusion)
 
 ## Objectives
 
@@ -523,3 +524,7 @@ ansible-playbook -i inventory/inventory.yml full_playbook.yml
 ```
 
 You should see all the tasks running and not making any change on the server unless on testing tasks.
+
+## Conclusion
+
+On this lab you learned how to create a playbook to install and configure multiple services on different servers.

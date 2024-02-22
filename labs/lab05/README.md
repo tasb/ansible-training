@@ -58,7 +58,9 @@ None.
 ```
 
 ## License
+
 MIT / BSD
 
 ## Author Information
+
 This role was created in 2024 on Ansible Training Labs

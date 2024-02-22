@@ -3,7 +3,7 @@
 ## Bootstrap a role
 
 ```bash
-ansible-galaxy role init  --init-path=./roles/ tasb.nginx
+ansible-galaxy role init --init-path=./roles/ tasb.nginx
 ```
 
 ## Review the role structure
