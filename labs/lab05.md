@@ -290,7 +290,6 @@ Create a playbook named `playbook.yml` and use the role `lab.usersandgroups` to 
           - "Music"
           - "Pictures"
           - "Videos"
-        #ssh_key: "{{ lookup('file', './new_key') }}"
       - name: devuser
         state: present
         password: "{{ 'password123' | password_hash('sha512') }}"
@@ -298,7 +297,6 @@ Create a playbook named `playbook.yml` and use the role `lab.usersandgroups` to 
         createhome: yes
         generate_ssh_key: true
         shell: "/bin/bash"
-        #ssh_key: "{{ lookup('file', './new_key') }}"
         default_folders:
           - "Documents"
           - "Downloads"
