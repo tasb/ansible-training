@@ -70,8 +70,6 @@ You must see the following files and directories:
     └── main.yml
 ```
 
-
-
 ## Step 02: Update documentation and meta files
 
 Update the `README.md` file with the role description and usage with the content available on this [README.md](lab05/README.md) file.
