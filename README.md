@@ -29,6 +29,9 @@ The slides used during the sessions are available on the `slides` folder.
 - [Deep Dive into Playbooks](slides/05.DeepDivePlaybooks.pdf)
 - [Roles](slides/06.Roles.pdf)
 - [Templates using Jinja2](slides/07.Templating.pdf)
+- [Error Handling](slides/08.ErrorHandling.pdf)
+- [Ansible Vault](slides/09.AnsibleVault.pdf)
+- [Ansible In Windows](slides/10.AnsibleInWindows.pdf)
 
 ## Labs
 
