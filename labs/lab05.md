@@ -345,7 +345,7 @@ Check the output and see if there's any change.
 
 In particular, check that the handler is not running again, because the SSH key was already fetched.
 
-Since you didn't change the `destination_path_on_control_node` variable, the SSH keys were fetch for the folder `/tmp` on the control node as defined as default on the `vars/main.yml` file.
+Since you didn't change the `destination_path_on_control_node` variable, the SSH keys were fetch for the folder `/tmp` on the control node as defined as default on the `defaults/main.yml` file.
 
 Just confirm that you got the keys from each user, running the following command:
 
