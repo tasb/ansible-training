@@ -88,7 +88,7 @@ Update the `tasks/main.yml` file removing all content and to include the followi
 ---
 - name: Install nginx
   package:
-    name: nginx={{ version }}
+    name: nginx
     state: present
 
 - name: Start nginx
