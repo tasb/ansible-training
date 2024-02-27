@@ -46,6 +46,7 @@ Now let's update role's files to install the `nginx` package and start the servi
 Update the `defaults/main.yml` file, removing all file content and include the following content:
 
 ```yaml
+---
 version: "1.18.0"
 template_file: "templates/index.html.j2"
 ```
