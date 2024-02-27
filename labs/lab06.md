@@ -142,8 +142,8 @@ ansible-playbook -i inventory nginx.yml
 
 Open a web browser and access the server using the following URL:
 
-- [http://servidor-0](http://servidor-0)
-- [http://servidor-1](http://servidor-1)
+- [http://servidor-0.seg-social.virt](http://servidor-0.seg-social.virt)
+- [http://servidor-1.seg-social.virt](http://servidor-1.seg-social.virt)
 
 You should see the `index.html` file created using the Jinja2 template.
 
