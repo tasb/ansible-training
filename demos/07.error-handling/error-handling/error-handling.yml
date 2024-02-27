@@ -1,5 +1,5 @@
 - name: Error handling using handlers
-  hosts: all
+  hosts: rasp
   gather_facts: no
   vars:
     date: "{{ lookup('pipe', 'date +%Y%m%d') }}"

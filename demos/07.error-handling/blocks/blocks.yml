@@ -1,7 +1,7 @@
 ---
 
 - name: Testing blocks
-  hosts: nodes
+  hosts: rasp
   gather_facts: no
   tasks:
     - block:
@@ -12,7 +12,9 @@
         # failed_when: true
 
       - name: Force a failure
-        command: /bin/false
+        apt:
+          name: some_unknown_package
+          state: present
       rescue:
         - name: All is good if the first task failed
           when: ansible_failed_task.name == 'Print a message'
@@ -32,12 +34,3 @@
     - name: Print another message
       debug:
         msg: 'I execute after block'
-
-  handlers:
-    - name: Handler 1
-      debug:
-        msg: "Handler 1"
-    
-    - name: Handler 2
-      debug:
-        msg: "Handler 2"
