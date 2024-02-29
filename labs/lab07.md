@@ -56,6 +56,37 @@ Run the playbook to make sure everything is working as expected, using the follo
 ansible-playbook -i inventory/inventory.yml full_playbook.yml
 ```
 
+In case you get an error starting Apache `httpd` service, create a file named `clean-nginx.yml` with the following content:
+
+```yaml
+---
+- name: Clean Nginx service
+  hosts: all
+  become: yes
+  task:
+  - name: Stop nginx
+    service:
+      name: nginx
+      state: stopped
+ 
+  - name: Remove nginx
+    package:
+      name: nginx
+      state: absent
+```
+
+Execute the playbook using the following command:
+
+```bash
+ansible-playbook -i inventory/inventory.yml clean-nginx.yml
+```
+
+Then, execute the `full_playbook.yml` again, using the following command:
+
+```bash
+ansible-playbook -i inventory/inventory.yml full_playbook.yml
+```
+
 ### Step 02: Use template for `redis.conf`
 
 On the `lab.redis` role, you should have a task with the following content:
