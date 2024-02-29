@@ -30,7 +30,7 @@ The slides used during the sessions are available on the `slides` folder.
 - [Roles](slides/06.Roles.pdf)
 - [Templates using Jinja2](slides/07.Templates.pdf)
 - [Error Handling](slides/08.ErrorHandling.pdf)
-- [Ansible Vault](slides/09.AnsibleVault.pdf)
+- [Ansible Vault](slides/09.Vault.pdf)
 - [Ansible In Windows](slides/10.AnsibleInWindows.pdf)
 
 ## Labs
@@ -42,7 +42,6 @@ The slides used during the sessions are available on the `slides` folder.
 - [Lab 5 - Roles](labs/lab05.md)
 - [Lab 6 - Templates using Jinja2](labs/lab06.md)
 - [Lab 7 - Error handling and Ansible Vault](labs/lab07.md)
-- [Lab 8 - CI/CD with Ansible](labs/lab08.md)
 
 ## Feedback
 
