@@ -429,7 +429,7 @@ After you added all the tasks, your `full_playbook.yml` should look like this:
     - name: Install Redis
       ansible.builtin.yum:
         name: redis
-        state: absent
+        state: present
       when: ansible_facts['os_family'] == "RedHat"
       register: redis_installed
       changed_when: redis_installed.rc == 0
