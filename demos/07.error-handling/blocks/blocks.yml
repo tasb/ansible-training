@@ -6,19 +6,19 @@
   tasks:
     - block:
       - name: Print a message
-        debug:
+        ansible.builtin.debug:
           msg: 'I execute normally'
         changed_when: true
         # failed_when: true
 
       - name: Force a failure
-        apt:
+        ansible.builtin.apt:
           name: some_unknown_package
           state: present
       rescue:
         - name: All is good if the first task failed
           when: ansible_failed_task.name == 'Print a message'
-          debug:
+          ansible.builtin.debug:
             msg: All is good!
 
         - name: All is good if the first task failed
@@ -32,5 +32,5 @@
           msg: Always run this
 
     - name: Print another message
-      debug:
+      ansible.builtin.debug:
         msg: 'I execute after block'
