@@ -46,6 +46,7 @@ Now let's update role's files to install the `nginx` package and start the servi
 Update the `defaults/main.yml` file, removing all file content and include the following content:
 
 ```yaml
+---
 version: "1.18.0"
 template_file: "templates/index.html.j2"
 ```
@@ -88,7 +89,7 @@ Update the `tasks/main.yml` file removing all content and to include the followi
 ---
 - name: Install nginx
   package:
-    name: nginx={{ version }}
+    name: nginx
     state: present
 
 - name: Start nginx
@@ -141,8 +142,8 @@ ansible-playbook -i inventory nginx.yml
 
 Open a web browser and access the server using the following URL:
 
-- [http://servidor-0](http://servidor-0)
-- [http://servidor-1](http://servidor-1)
+- [http://servidor-0.seg-social.virt](http://servidor-0.seg-social.virt)
+- [http://servidor-1.seg-social.virt](http://servidor-1.seg-social.virt)
 
 You should see the `index.html` file created using the Jinja2 template.
 
