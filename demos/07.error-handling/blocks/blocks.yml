@@ -9,7 +9,7 @@
         ansible.builtin.debug:
           msg: 'I execute normally'
         changed_when: true
-        # failed_when: true
+        failed_when: true
 
       - name: Force a failure
         ansible.builtin.apt:
@@ -19,9 +19,9 @@
         - name: All is good if the first task failed
           when: ansible_failed_task.name == 'Print a message'
           ansible.builtin.debug:
-            msg: All is good!
+            msg: All good!
 
-        - name: All is good if the first task failed
+        - name: All is not good if the second task failed
           when: ansible_failed_task.name == 'Force a failure'
           ansible.builtin.fail:
             msg: It is still failed!!!

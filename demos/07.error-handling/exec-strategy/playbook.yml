@@ -1,7 +1,7 @@
 - name: Test Free Execution Strategy
   hosts: all
   gather_facts: false
-  #strategy: free
+  strategy: free
   tasks:
     - name: Copy script to remote host
       ansible.builtin.copy:

@@ -2,8 +2,7 @@
   hosts: rocky
   gather_facts: no
   vars:
-    bd_pass:
-
+    bd_pass: 
   tasks:
     - name: Display secret password from the first vault
       debug:

@@ -3,16 +3,16 @@
   gather_facts: no
   tasks:
     - name: Copy encrypted file
-      copy:
+      ansible.builtin.copy:
         src: confidential_data.txt
         dest: /tmp/confidential_data.txt
 
     - name: Display file contents
-      command: cat /tmp/confidential_data.txt
+      ansible.builtin.command: cat /tmp/confidential_data.txt
       register: command_output
 
     - name: Print to console
-      debug:
+      ansible.builtin.debug:
         msg: "{{command_output.stdout}}"
 
 
