@@ -158,7 +158,7 @@ redis_password: !vault |
           663736336336313062....
 ```
 
-Now you need to create a new `vars` block inside `lab.redis` role with the encrypted variable.
+Now you need to create a new `vars` block inside the playbook with the encrypted variable.
 
 After doing this, your playbook should look like this:
 
