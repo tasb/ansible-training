@@ -2,12 +2,8 @@ webserver:
   hosts:
     tiberna-rasp-002:
       ansible_host: 10.20.30.113
-      ansible_user: ubuntu
-      ansible_ssh_private_key_file: /Users/tiago.bernardo/ssh-keys/tiberna-key.pem
     tiberna-rasp-003:
-      ansible_host: 10.20.30.113
-      ansible_user: ubuntu
-      ansible_ssh_private_key_file: /Users/tiago.bernardo/ssh-keys/tiberna-key.pem
+      ansible_host: 10.20.30.115
 db:
   hosts:
     tiberna-rocky-002:
